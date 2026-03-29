@@ -44,6 +44,145 @@
             -webkit-text-fill-color: transparent;
         }
 
+        .hero-title {
+            padding-top: 0.95em;
+            padding-bottom: 0.12em;
+            overflow: visible;
+        }
+
+        .longtail-word {
+            position: relative;
+            display: inline-block;
+            vertical-align: baseline;
+            isolation: isolate;
+        }
+
+        .longtail-word .tail-core {
+            display: inline-block;
+            line-height: 1.08;
+            padding-bottom: 0.04em;
+            background: linear-gradient(90deg, #1d4ed8 0%, #0f766e 48%, #2563eb 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .longtail-histogram {
+            position: absolute;
+            left: 0;
+            bottom: calc(100% + 0.08em);
+            width: 100%;
+            display: inline-flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 0.08em;
+            height: 0.68em;
+            opacity: 0.92;
+            pointer-events: none;
+        }
+
+        .longtail-bar {
+            flex: 1 1 0;
+            min-width: 0;
+            border-radius: 9999px 9999px 0 0;
+            background: linear-gradient(180deg, rgba(37, 99, 235, 0.95), rgba(45, 212, 191, 0.58));
+            transform-origin: bottom center;
+            animation: histogramPulse 2.8s var(--motion-smooth) infinite;
+        }
+
+        .longtail-bar:nth-child(1) {
+            height: 100%;
+            animation-delay: 0s;
+            flex-grow: 1.45;
+        }
+
+        .longtail-bar:nth-child(2) {
+            height: 0.78em;
+            animation-delay: 0.08s;
+            flex-grow: 1.2;
+        }
+
+        .longtail-bar:nth-child(3) {
+            height: 0.58em;
+            animation-delay: 0.16s;
+            flex-grow: 1.08;
+        }
+
+        .longtail-bar:nth-child(4) {
+            height: 0.43em;
+            animation-delay: 0.24s;
+        }
+
+        .longtail-bar:nth-child(5) {
+            height: 0.32em;
+            animation-delay: 0.32s;
+        }
+
+        .longtail-bar:nth-child(6) {
+            height: 0.24em;
+            animation-delay: 0.4s;
+        }
+
+        .longtail-bar:nth-child(7) {
+            height: 0.18em;
+            animation-delay: 0.48s;
+        }
+
+        .longtail-bar:nth-child(8) {
+            height: 0.135em;
+            animation-delay: 0.56s;
+        }
+
+        .longtail-bar:nth-child(9) {
+            height: 0.105em;
+            animation-delay: 0.64s;
+        }
+
+        .longtail-bar:nth-child(10) {
+            height: 0.085em;
+            animation-delay: 0.72s;
+        }
+
+        .longtail-bar:nth-child(11) {
+            height: 0.07em;
+            animation-delay: 0.8s;
+        }
+
+        .longtail-bar:nth-child(12) {
+            height: 0.058em;
+            animation-delay: 0.88s;
+        }
+
+        .longtail-bar:nth-child(13) {
+            height: 0.048em;
+            animation-delay: 0.96s;
+        }
+
+        .longtail-bar:nth-child(14) {
+            height: 0.04em;
+            animation-delay: 1.04s;
+        }
+
+        @keyframes histogramPulse {
+
+            0%,
+            100% {
+                transform: scaleY(0.92);
+                opacity: 0.72;
+            }
+
+            35% {
+                transform: scaleY(1.12);
+                opacity: 1;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .longtail-bar {
+                animation: none;
+            }
+        }
+
         .paper-button {
             position: relative;
             overflow: hidden;
@@ -219,6 +358,65 @@
             z-index: -1;
             pointer-events: none;
         }
+
+        .intro-panel {
+            position: relative;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.9));
+            border: 1px solid rgba(226, 232, 240, 0.95);
+            box-shadow: 0 24px 60px -38px rgba(15, 23, 42, 0.28);
+            overflow: hidden;
+        }
+
+        .intro-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            padding: 0.45rem 0.8rem;
+            border-radius: 9999px;
+            background: rgba(239, 246, 255, 0.95);
+            border: 1px solid rgba(191, 219, 254, 0.95);
+            color: #1d4ed8;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        .intro-copy {
+            font-size: 1.08rem;
+            line-height: 1.95;
+            color: #374151;
+        }
+
+        .intro-copy p+p {
+            margin-top: 1.35rem;
+        }
+
+        .intro-question {
+            margin: 1.5rem;
+            padding: 1.1rem 1.2rem;
+            border-radius: 1rem;
+            background: linear-gradient(135deg, rgba(239, 246, 255, 0.95), rgba(236, 253, 245, 0.9));
+            color: #0f172a;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+        }
+
+        @media (max-width: 768px) {
+            .intro-panel {
+                padding: 1.4rem;
+            }
+
+            .intro-summary {
+                grid-template-columns: 1fr;
+            }
+
+            .intro-copy {
+                font-size: 1rem;
+                line-height: 1.8;
+            }
+        }
     </style>
 </head>
 
@@ -233,11 +431,25 @@
                     <img src="data/school_icons/cu.png" alt="columbia Logo" class="w-20 h-auto">
                 </div>
                 <nav class="flex items-center gap-4 text-sm font-medium text-gray-700">
-                    <a href="#benchmark" class="nav-link hover:text-blue-600">The Benchmark</a>
-                    <a href="#failure-modes" class="nav-link hover:text-blue-600">Failure Modes</a>
-                    <a href="#results" class="nav-link hover:text-blue-600">Results</a>
-                    <a href="#citation" class="nav-link hover:text-blue-600">Citation</a>
+                    <a href="#benchmark" class="nav-link hover:text-blue-600"
+                        onclick="scrollWithOffset(event, 'benchmark')">TAILOR Benchmark</a>
+                    <a href="#results" class="nav-link hover:text-blue-600"
+                        onclick="scrollWithOffset(event, 'results')">Results</a>
+                    <a href="#failure-modes" class="nav-link hover:text-blue-600"
+                        onclick="scrollWithOffset(event, 'failure-modes')">Failure Modes</a>
+                    <a href="#citation" class="nav-link hover:text-blue-600"
+                        onclick="scrollWithOffset(event, 'citation')">Citation</a>
                 </nav>
+                <script>
+                    function scrollWithOffset(event, id) {
+                        event.preventDefault();
+                        const target = document.getElementById(id);
+                        const header = document.querySelector('.site-header');
+                        const yOffset = header ? header.offsetHeight : 0;
+                        const y = target.getBoundingClientRect().top + window.pageYOffset - yOffset;
+                        window.scrollTo({ top: y, behavior: 'smooth' });
+                    }
+                </script>
             </div>
         </div>
     </header>
@@ -245,8 +457,16 @@
     <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12">
 
         <div class="text-center mb-12" data-aos="fade-up" data-aos-duration="900">
-            <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-6 leading-tight gradient-text">
-                Trimming the Long-Tail of <br class="hidden sm:block" />World Modeling in
+            <h1 class="hero-title text-4xl sm:text-5xl font-extrabold tracking-tight mb-6 leading-[1.22] gradient-text">
+                Trimming the <span class="longtail-word"><span class="longtail-histogram" aria-hidden="true"><span
+                            class="longtail-bar"></span><span class="longtail-bar"></span><span
+                            class="longtail-bar"></span><span class="longtail-bar"></span><span
+                            class="longtail-bar"></span><span class="longtail-bar"></span><span
+                            class="longtail-bar"></span><span class="longtail-bar"></span><span
+                            class="longtail-bar"></span><span class="longtail-bar"></span><span
+                            class="longtail-bar"></span><span class="longtail-bar"></span><span
+                            class="longtail-bar"></span><span class="longtail-bar"></span></span><span
+                        class="tail-core">Long-Tail</span></span> of <br class="hidden sm:block" />World Modeling in
                 Visual Generation
             </h1>
 
@@ -294,7 +514,7 @@
         </div>
 
         <section id="video" class="section-shell mb-16" data-aos="fade-up" data-aos-duration="900">
-            <div class="video-container bg-gray-100 border border-white/70 rounded-xl">
+            <div class="video-container bg-gray-100 border-3 border-black rounded-xl">
                 <iframe src="data/intro_video.mp4" title="TAILOR Introduction Video" frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen></iframe>
@@ -302,50 +522,87 @@
         </section>
 
         <section id="intro" class="section-shell mb-16" data-aos="fade-up" data-aos-duration="900">
-            <h2 class="text-2xl font-bold mb-4 border-b pb-2 border-gray-200">Introduction</h2>
-            <p class="text-gray-700 leading-relaxed text-lg serif-text text-justify">
-                Physical interactions follow a long-tailed distribution: a set of common and regular physical
-                interactions dominates human experience and visual data, whereas a broad spectrum of rare and irregular
-                interactions demands reasoning over fundamental object attributes. Although recent world models (e.g.,
-                image and video generation models) achieve impressive realism on existing benchmarks, they primarily
-                focus on simulating common, in-distribution physical interactions.
-                <br><br>
-                This raises a central question: <strong>Do current world models truly internalize the underlying
-                    physical principles of object interactions, or do they primarily rely on statistical regularities
-                    observed in training data?</strong>
-                <br><br>
-                In this work, we introduce <strong>TAILOR</strong>, a benchmark that challenges world models with
-                irregular physical interactions. We evaluate scenarios under two complementary settings—Predictive
-                generation and Descriptive generation—and reveal a pronounced long-tail generalization gap. Our results
-                suggest that current world models exhibit limited understanding of physical principles and struggle with
-                attribute-level generalization under distribution shift.
-            </p>
+            <div class="intro-panel glass-panel" data-aos="fade-up" data-aos-delay="80">
+                <div class="mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <span class="intro-kicker"><i class="fa-solid fa-wave-square"></i> Introduction</span>
+                    </div>
+                </div>
+
+                <div class="intro-copy serif-text text-justify">
+                    <p>
+                        Physical interactions follow a long-tailed distribution: a set of common and regular physical
+                        interactions dominates human experience and visual data, whereas a broad spectrum of rare and
+                        irregular
+                        interactions demands reasoning over fundamental object attributes. Although recent world models
+                        (e.g.,
+                        image and video generation models) achieve impressive realism on existing benchmarks, they
+                        primarily
+                        focus on simulating common, in-distribution physical interactions.
+                    </p>
+
+                    <div class="intro-question">
+                        <strong>This raises a central question:</strong> Do current world models truly internalize the
+                        underlying
+                        physical principles of object interactions, or do they primarily rely on statistical
+                        regularities
+                        observed in training data?
+                    </div>
+
+                    <p>
+                        To answer this question, we introduce <strong>TAILOR</strong>, a benchmark that challenges world
+                        models
+                        with
+                        irregular physical interactions. We evaluate scenarios under two complementary
+                        settings—Predictive
+                        generation and Descriptive generation—and reveal a pronounced long-tail generalization gap. Our
+                        results
+                        suggest that current world models exhibit limited understanding of physical principles and
+                        struggle with
+                        attribute-level generalization under distribution shift.
+                    </p>
+                </div>
+            </div>
         </section>
 
         <section id="benchmark" class="section-shell mb-16" data-aos="fade-up" data-aos-duration="900">
-            <h2 class="text-2xl font-bold mb-4 border-b pb-2 border-gray-200">The TAILOR Benchmark</h2>
+            <h2 class="text-2xl font-bold mb-4 border-b pb-2 border-gray-200">TAILOR Benchmark</h2>
 
-            <img src="data/teaser.png" alt="TAILOR Benchmark Overview" class="w-full rounded-2xl shadow-[0_30px_70px_-42px_rgba(15,23,42,0.45)] mb-6 border border-white/70" data-aos="zoom-out-up" data-aos-duration="850">
+            <img src="data/teaser.png" alt="TAILOR Benchmark Overview"
+                class="w-full rounded-2xl shadow-[0_30px_70px_-42px_rgba(15,23,42,0.45)] mb-6 border border-white/70"
+                data-aos="zoom-out-up" data-aos-duration="850">
             <p class="text-sm text-gray-600 text-center italic mb-8">
                 TAILOR challenges world models to simulate long-tail scenarios that require reasoning about object
                 attributes.
             </p>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="benchmark-card interactive-card glass-panel p-6 rounded-2xl" data-aos="fade-up" data-aos-delay="0">
-                    <div class="benchmark-icon inline-flex w-12 h-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-500 text-2xl mb-4"><i class="fa-solid fa-hammer"></i></div>
+                <div class="benchmark-card interactive-card glass-panel p-6 rounded-2xl" data-aos="fade-up"
+                    data-aos-delay="0">
+                    <div
+                        class="benchmark-icon inline-flex w-12 h-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-500 text-2xl mb-4">
+                        <i class="fa-solid fa-hammer"></i>
+                    </div>
                     <h3 class="font-bold text-lg mb-2">Regular Scenarios</h3>
                     <p class="text-gray-600 text-sm">Reflects common tool-task pairs. Tests whether models can reproduce
                         highly frequent interactions observed in training data.</p>
                 </div>
-                <div class="benchmark-card interactive-card glass-panel p-6 rounded-2xl" data-aos="fade-up" data-aos-delay="100">
-                    <div class="benchmark-icon inline-flex w-12 h-12 items-center justify-center rounded-2xl bg-amber-50 text-yellow-500 text-2xl mb-4"><i class="fa-solid fa-lightbulb"></i></div>
+                <div class="benchmark-card interactive-card glass-panel p-6 rounded-2xl" data-aos="fade-up"
+                    data-aos-delay="100">
+                    <div
+                        class="benchmark-icon inline-flex w-12 h-12 items-center justify-center rounded-2xl bg-amber-50 text-yellow-500 text-2xl mb-4">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </div>
                     <h3 class="font-bold text-lg mb-2">Unconventional Scenarios</h3>
                     <p class="text-gray-600 text-sm">Replaces canonical tools with attribute-compatible substitutes.
                         Tests affordance generalization beyond surface-level associations.</p>
                 </div>
-                <div class="benchmark-card interactive-card glass-panel p-6 rounded-2xl" data-aos="fade-up" data-aos-delay="200">
-                    <div class="benchmark-icon inline-flex w-12 h-12 items-center justify-center rounded-2xl bg-red-50 text-red-500 text-2xl mb-4"><i class="fa-solid fa-ban"></i></div>
+                <div class="benchmark-card interactive-card glass-panel p-6 rounded-2xl" data-aos="fade-up"
+                    data-aos-delay="200">
+                    <div
+                        class="benchmark-icon inline-flex w-12 h-12 items-center justify-center rounded-2xl bg-red-50 text-red-500 text-2xl mb-4">
+                        <i class="fa-solid fa-ban"></i>
+                    </div>
                     <h3 class="font-bold text-lg mb-2">Impossible Scenarios</h3>
                     <p class="text-gray-600 text-sm">Introduces attribute-violating tools. Probes constraint awareness
                         and whether models recognize when an interaction should fail.</p>
@@ -359,8 +616,7 @@
                 </h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div
-                        class="interactive-card glass-panel relative p-6 border-l-4 border-indigo-500 rounded-r-2xl">
+                    <div class="interactive-card glass-panel relative p-6 border-l-4 border-indigo-500 rounded-r-2xl">
                         <h4 class="text-lg font-bold text-gray-900 mb-2">Predictive Generation</h4>
                         <p class="text-sm text-gray-600 mb-4 leading-relaxed">
                             We provide a prompt describing the <strong>initial setup</strong> only (e.g., <em>"A person
@@ -381,8 +637,7 @@
                         </ul>
                     </div>
 
-                    <div
-                        class="interactive-card glass-panel relative p-6 border-l-4 border-emerald-500 rounded-r-2xl">
+                    <div class="interactive-card glass-panel relative p-6 border-l-4 border-emerald-500 rounded-r-2xl">
                         <h4 class="text-lg font-bold text-gray-900 mb-2">Descriptive Generation</h4>
                         <p class="text-sm text-gray-600 mb-4 leading-relaxed">
                             The prompt explicitly <strong>specifies the outcome</strong> (e.g., <em>"...the screwdriver
@@ -454,7 +709,8 @@
                 </div>
             </div>
 
-            <div class="glass-panel rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-8" data-aos="fade-up" data-aos-delay="100">
+            <div class="glass-panel rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-8"
+                data-aos="fade-up" data-aos-delay="100">
                 <div class="bg-gray-50 p-4 border-b border-gray-200">
                     <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
                         <i class="fa-regular fa-image text-blue-500"></i> Image Generation Models
@@ -499,7 +755,8 @@
                 </div>
             </div>
 
-            <div class="glass-panel rounded-2xl border border-gray-200 shadow-sm overflow-hidden" data-aos="fade-up" data-aos-delay="180">
+            <div class="glass-panel rounded-2xl border border-gray-200 shadow-sm overflow-hidden" data-aos="fade-up"
+                data-aos-delay="180">
                 <div class="bg-gray-50 p-4 border-b border-gray-200">
                     <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
                         <i class="fa-solid fa-film text-purple-500"></i> Video Generation Models
@@ -554,7 +811,8 @@
                 with descriptive and predictive examples.
             </p>
 
-            <div class="glass-panel rounded-2xl border border-gray-200 shadow-sm overflow-hidden" data-aos="fade-up" data-aos-delay="120">
+            <div class="glass-panel rounded-2xl border border-gray-200 shadow-sm overflow-hidden" data-aos="fade-up"
+                data-aos-delay="120">
                 <div class="bg-gray-50 border-b border-gray-200 p-6 sm:p-8">
                     <div class="flex flex-col xl:flex-row gap-8 justify-between xl:items-center">
                         <div class="max-w-xl">
@@ -612,7 +870,8 @@
 
         <section id="citation" class="section-shell mb-12" data-aos="fade-up" data-aos-duration="900">
             <h2 class="text-2xl font-bold mb-4">Citation</h2>
-            <div class="bg-gray-800 rounded-2xl p-4 overflow-x-auto relative group shadow-[0_24px_60px_-35px_rgba(17,24,39,0.9)]">
+            <div
+                class="bg-gray-800 rounded-2xl p-4 overflow-x-auto relative group shadow-[0_24px_60px_-35px_rgba(17,24,39,0.9)]">
                 <button onclick="navigator.clipboard.writeText(document.getElementById('bibtex').innerText)"
                     class="absolute top-2 right-2 bg-gray-700 hover:bg-gray-600 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
                     Copy
