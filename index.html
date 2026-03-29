@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAILOR: Trimming the Long-Tail of World Modeling</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
+
+    <style>
+        :root {
+            --motion-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #1f2937;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .serif-text {
+            font-family: 'Noto Serif', serif;
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, #2563eb, #059669);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .paper-button {
+            position: relative;
+            overflow: hidden;
+            isolation: isolate;
+            transition: transform 0.45s var(--motion-smooth), box-shadow 0.45s var(--motion-smooth), border-color 0.3s ease, background-color 0.3s ease;
+        }
+
+        .paper-button:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 18px 45px -24px rgba(15, 23, 42, 0.45);
+        }
+
+        .paper-button::before {
+            content: "";
+            position: absolute;
+            inset: -120% auto auto -210%;
+            width: 140%;
+            height: 320%;
+            background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.45) 50%, transparent 70%);
+            transform: rotate(18deg);
+            transition: transform 0.75s var(--motion-smooth);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .paper-button:hover::before {
+            transform: translateX(210%) rotate(18deg);
+        }
+
+        .cta-primary {
+            background: linear-gradient(135deg, #111827 0%, #1d4ed8 100%);
+            box-shadow: 0 16px 35px -20px rgba(29, 78, 216, 0.8);
+        }
+
+        .cta-secondary {
+            border: 1px solid rgba(148, 163, 184, 0.45);
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(12px);
+        }
+
+        .cta-data {
+            border: 1px solid rgba(245, 158, 11, 0.28);
+            background: linear-gradient(135deg, rgba(255, 247, 237, 0.98) 0%, rgba(255, 237, 213, 0.92) 100%);
+            color: #9a3412;
+            box-shadow: 0 16px 35px -24px rgba(245, 158, 11, 0.55);
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 1.25rem;
+            box-shadow: 0 26px 60px -35px rgba(15, 23, 42, 0.35);
+        }
+
+        .video-container iframe,
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .gallery-tab-active {
+            background-color: #111827;
+            color: #ffffff;
+            border-color: #111827;
+            box-shadow: 0 10px 30px -20px rgba(17, 24, 39, 0.8);
+        }
+
+        .lightbox-open {
+            overflow: hidden;
+        }
+
+        .site-header {
+            background: rgba(255, 255, 255, 0.55);
+            border-color: rgba(226, 232, 240, 0.55);
+            box-shadow: none;
+            transition: background-color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, backdrop-filter 0.35s ease;
+        }
+
+        .site-header.is-scrolled {
+            background: rgba(255, 255, 255, 0.88);
+            border-color: rgba(203, 213, 225, 0.9);
+            backdrop-filter: blur(16px);
+            box-shadow: 0 16px 40px -28px rgba(15, 23, 42, 0.4);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -0.4rem;
+            width: 100%;
+            height: 2px;
+            border-radius: 9999px;
+            background: linear-gradient(90deg, #2563eb, #14b8a6);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.35s var(--motion-smooth);
+        }
+
+        .nav-link:hover::after {
+            transform: scaleX(1);
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.74);
+            border: 1px solid rgba(226, 232, 240, 0.85);
+            box-shadow: 0 20px 45px -32px rgba(15, 23, 42, 0.28);
+            backdrop-filter: blur(18px);
+        }
+
+        .interactive-card {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.45s var(--motion-smooth), box-shadow 0.45s var(--motion-smooth), border-color 0.35s ease;
+        }
+
+        .interactive-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), transparent 55%);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+            pointer-events: none;
+        }
+
+        .interactive-card:hover {
+            transform: translateY(-10px) scale(1.01);
+            box-shadow: 0 28px 60px -34px rgba(37, 99, 235, 0.45);
+            border-color: rgba(96, 165, 250, 0.45);
+        }
+
+        .interactive-card:hover::before {
+            opacity: 1;
+        }
+
+        .benchmark-card {
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.95)),
+                rgba(255, 255, 255, 0.9);
+        }
+
+        .benchmark-card .benchmark-icon {
+            transition: transform 0.45s var(--motion-smooth), box-shadow 0.35s ease;
+            box-shadow: 0 12px 28px -18px currentColor;
+        }
+
+        .benchmark-card:hover .benchmark-icon {
+            transform: scale(1.08) rotate(-4deg);
+        }
+
+        .section-shell {
+            position: relative;
+        }
+
+        .section-shell::before {
+            content: "";
+            position: absolute;
+            inset: -1.25rem -1.25rem auto;
+            height: 14rem;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.45), transparent);
+            filter: blur(28px);
+            z-index: -1;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="site-header fixed top-0 inset-x-0 backdrop-blur border-b z-30">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="h-16 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <img src="data/school_icons/uiuc.png" alt="uiuc Logo" class="w-20 h-auto">
+                    <img src="data/school_icons/stf.png" alt="stanford Logo" class="w-20 h-auto">
+                    <img src="data/school_icons/cu.png" alt="columbia Logo" class="w-20 h-auto">
+                </div>
+                <nav class="flex items-center gap-4 text-sm font-medium text-gray-700">
+                    <a href="#benchmark" class="nav-link hover:text-blue-600">The Benchmark</a>
+                    <a href="#failure-modes" class="nav-link hover:text-blue-600">Failure Modes</a>
+                    <a href="#results" class="nav-link hover:text-blue-600">Results</a>
+                    <a href="#citation" class="nav-link hover:text-blue-600">Citation</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12">
+
+        <div class="text-center mb-12" data-aos="fade-up" data-aos-duration="900">
+            <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-6 leading-tight gradient-text">
+                Trimming the Long-Tail of <br class="hidden sm:block" />World Modeling in
+                Visual Generation
+            </h1>
+
+            <div class="text-lg mb-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-gray-700">
+                <span class="font-medium hover:text-blue-600 transition-colors cursor-pointer"><a href="#">Bingxuan
+                        Li</a><sup>1</sup></span>
+                <span class="font-medium hover:text-blue-600 transition-colors cursor-pointer"><a href="#">Yining
+                        Hong</a><sup>2</sup></span>
+                <span class="font-medium hover:text-blue-600 transition-colors cursor-pointer"><a href="#">Cheng
+                        Qian</a><sup>1</sup></span>
+                <span class="font-medium hover:text-blue-600 transition-colors cursor-pointer"><a href="#">Hyeonjeong
+                        Ha</a><sup>1</sup></span>
+                <span class="font-medium hover:text-blue-600 transition-colors cursor-pointer"><a href="#">Jiateng
+                        Liu</a><sup>1</sup></span>
+                <span class="font-medium hover:text-blue-600 transition-colors cursor-pointer"><a href="#">Yue
+                        Guo</a><sup>1</sup></span>
+                <span class="font-medium hover:text-blue-600 transition-colors cursor-pointer"><a href="#">Yunzhu
+                        Li</a><sup>3</sup></span>
+                <span class="font-medium hover:text-blue-600 transition-colors cursor-pointer"><a href="#">Heng
+                        Ji</a><sup>1</sup></span>
+            </div>
+
+            <div class="text-lg text-gray-500 mb-6 space-y-1">
+                <p><sup>1</sup> University of Illinois Urbana-Champaign &nbsp;&nbsp;&nbsp;&nbsp; <sup>2</sup> Stanford
+                    University &nbsp;&nbsp;&nbsp;&nbsp; <sup>3</sup> Columbia University</p>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="#"
+                    class="paper-button cta-secondary text-gray-800 px-6 py-3 rounded-full flex items-center gap-2 font-medium">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    Paper
+                </a>
+                <a href="#"
+                    class="paper-button cta-secondary text-gray-800 px-6 py-3 rounded-full flex items-center gap-2 font-medium hover:bg-white">
+                    <i class="fa-brands fa-github"></i>
+                    Code
+                </a>
+                <a href="#"
+                    class="paper-button  cta-secondary text-gray-800 px-6 py-3 rounded-full flex items-center gap-2 font-medium">
+                    <i class="fa-solid fa-database"></i>
+                    Dataset
+                </a>
+            </div>
+        </div>
+
+        <section id="video" class="section-shell mb-16" data-aos="fade-up" data-aos-duration="900">
+            <div class="video-container bg-gray-100 border border-white/70 rounded-xl">
+                <iframe src="data/intro_video.mp4" title="TAILOR Introduction Video" frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
+            </div>
+        </section>
+
+        <section id="intro" class="section-shell mb-16" data-aos="fade-up" data-aos-duration="900">
+            <h2 class="text-2xl font-bold mb-4 border-b pb-2 border-gray-200">Introduction</h2>
+            <p class="text-gray-700 leading-relaxed text-lg serif-text text-justify">
+                Physical interactions follow a long-tailed distribution: a set of common and regular physical
+                interactions dominates human experience and visual data, whereas a broad spectrum of rare and irregular
+                interactions demands reasoning over fundamental object attributes. Although recent world models (e.g.,
+                image and video generation models) achieve impressive realism on existing benchmarks, they primarily
+                focus on simulating common, in-distribution physical interactions.
+                <br><br>
+                This raises a central question: <strong>Do current world models truly internalize the underlying
+                    physical principles of object interactions, or do they primarily rely on statistical regularities
+                    observed in training data?</strong>
+                <br><br>
+                In this work, we introduce <strong>TAILOR</strong>, a benchmark that challenges world models with
+                irregular physical interactions. We evaluate scenarios under two complementary settings—Predictive
+                generation and Descriptive generation—and reveal a pronounced long-tail generalization gap. Our results
+                suggest that current world models exhibit limited understanding of physical principles and struggle with
+                attribute-level generalization under distribution shift.
+            </p>
+        </section>
+
+        <section id="benchmark" class="section-shell mb-16" data-aos="fade-up" data-aos-duration="900">
+            <h2 class="text-2xl font-bold mb-4 border-b pb-2 border-gray-200">The TAILOR Benchmark</h2>
+
+            <img src="data/teaser.png" alt="TAILOR Benchmark Overview" class="w-full rounded-2xl shadow-[0_30px_70px_-42px_rgba(15,23,42,0.45)] mb-6 border border-white/70" data-aos="zoom-out-up" data-aos-duration="850">
+            <p class="text-sm text-gray-600 text-center italic mb-8">
+                TAILOR challenges world models to simulate long-tail scenarios that require reasoning about object
+                attributes.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="benchmark-card interactive-card glass-panel p-6 rounded-2xl" data-aos="fade-up" data-aos-delay="0">
+                    <div class="benchmark-icon inline-flex w-12 h-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-500 text-2xl mb-4"><i class="fa-solid fa-hammer"></i></div>
+                    <h3 class="font-bold text-lg mb-2">Regular Scenarios</h3>
+                    <p class="text-gray-600 text-sm">Reflects common tool-task pairs. Tests whether models can reproduce
+                        highly frequent interactions observed in training data.</p>
+                </div>
+                <div class="benchmark-card interactive-card glass-panel p-6 rounded-2xl" data-aos="fade-up" data-aos-delay="100">
+                    <div class="benchmark-icon inline-flex w-12 h-12 items-center justify-center rounded-2xl bg-amber-50 text-yellow-500 text-2xl mb-4"><i class="fa-solid fa-lightbulb"></i></div>
+                    <h3 class="font-bold text-lg mb-2">Unconventional Scenarios</h3>
+                    <p class="text-gray-600 text-sm">Replaces canonical tools with attribute-compatible substitutes.
+                        Tests affordance generalization beyond surface-level associations.</p>
+                </div>
+                <div class="benchmark-card interactive-card glass-panel p-6 rounded-2xl" data-aos="fade-up" data-aos-delay="200">
+                    <div class="benchmark-icon inline-flex w-12 h-12 items-center justify-center rounded-2xl bg-red-50 text-red-500 text-2xl mb-4"><i class="fa-solid fa-ban"></i></div>
+                    <h3 class="font-bold text-lg mb-2">Impossible Scenarios</h3>
+                    <p class="text-gray-600 text-sm">Introduces attribute-violating tools. Probes constraint awareness
+                        and whether models recognize when an interaction should fail.</p>
+                </div>
+            </div>
+
+            <div class="mt-12" data-aos="fade-up" data-aos-delay="150">
+                <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-vial-circle-check text-indigo-600"></i>
+                    Two Evaluation Settings
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div
+                        class="interactive-card glass-panel relative p-6 border-l-4 border-indigo-500 rounded-r-2xl">
+                        <h4 class="text-lg font-bold text-gray-900 mb-2">Predictive Generation</h4>
+                        <p class="text-sm text-gray-600 mb-4 leading-relaxed">
+                            We provide a prompt describing the <strong>initial setup</strong> only (e.g., <em>"A person
+                                tries to
+                                open a wine bottle with a screwdriver"</em>). The model must infer the physical outcome.
+                        </p>
+                        <ul class="space-y-2">
+                            <li class="flex items-start gap-2 text-xs text-gray-700">
+                                <i class="fa-solid fa-check text-green-500 mt-0.5"></i>
+                                <span><strong>Tests:</strong> Internalized physical priors and causal "common
+                                    sense."</span>
+                            </li>
+                            <li class="flex items-start gap-2 text-xs text-gray-700">
+                                <i class="fa-solid fa-magnifying-glass text-blue-500 mt-0.5"></i>
+                                <span><strong>Insight:</strong> Does the model "know" what happens next without being
+                                    told?</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div
+                        class="interactive-card glass-panel relative p-6 border-l-4 border-emerald-500 rounded-r-2xl">
+                        <h4 class="text-lg font-bold text-gray-900 mb-2">Descriptive Generation</h4>
+                        <p class="text-sm text-gray-600 mb-4 leading-relaxed">
+                            The prompt explicitly <strong>specifies the outcome</strong> (e.g., <em>"...the screwdriver
+                                fails to
+                                remove the cork"</em>). This removes the need for physical "guessing."
+                        </p>
+                        <ul class="space-y-2">
+                            <li class="flex items-start gap-2 text-xs text-gray-700">
+                                <i class="fa-solid fa-check text-green-500 mt-0.5"></i>
+                                <span><strong>Tests:</strong> Fine-grained instruction following and attribute
+                                    binding.</span>
+                            </li>
+                            <li class="flex items-start gap-2 text-xs text-gray-700">
+                                <i class="fa-solid fa-magnifying-glass text-blue-500 mt-0.5"></i>
+                                <span><strong>Insight:</strong> Can the model override its training biases when told to
+                                    do
+                                    so?</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="results" class="section-shell mb-16" data-aos="fade-up" data-aos-duration="900">
+            <div
+                class="flex flex-col sm:flex-row sm:items-end justify-between mb-6 gap-4 border-b pb-4 border-gray-200">
+                <div>
+                    <h2 class="text-2xl font-bold mb-2">Quantitative Results</h2>
+                    <p class="text-gray-600 text-sm">Automatic and human evaluation results across TAILOR's three
+                        scenarios.</p>
+                </div>
+
+                <div class="flex flex-col gap-3">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1 sm:hidden">Prompt
+                        Setting</p>
+                    <div class="flex bg-gray-100 p-1 rounded-lg w-fit">
+                        <button onclick="updateSetting('predictive')" id="btn-predictive"
+                            class="tab-btn px-4 py-1.5 text-sm font-semibold rounded-md shadow bg-white text-gray-900 transition-all">Predictive</button>
+                        <button onclick="updateSetting('descriptive')" id="btn-descriptive"
+                            class="tab-btn px-4 py-1.5 text-sm font-semibold rounded-md text-gray-500 hover:text-gray-900 transition-all">Descriptive</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-4 px-1">
+                <div class="flex items-center gap-4 text-xs">
+                    <div class="flex items-center gap-1.5"><span
+                            class="w-3 h-3 rounded-sm bg-teal-100 border border-teal-200"></span><span
+                            class="text-gray-600 font-medium">Best Auto</span></div>
+                    <div class="flex items-center gap-1.5"><span
+                            class="w-3 h-3 rounded-sm bg-amber-100 border border-amber-200"></span><span
+                            class="text-gray-600 font-medium">Best Human</span></div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-gray-500">Score View:</span>
+                    <div class="flex bg-gray-200 p-0.5 rounded-md">
+                        <button onclick="updateView('both')" id="view-both"
+                            class="view-btn px-3 py-1 text-xs font-medium rounded shadow-sm bg-white text-gray-800 transition-all">Both
+                            (A/H)</button>
+                        <button onclick="updateView('auto')" id="view-auto"
+                            class="view-btn px-3 py-1 text-xs font-medium rounded text-gray-500 hover:text-gray-800 transition-all">Auto
+                            Only</button>
+                        <button onclick="updateView('human')" id="view-human"
+                            class="view-btn px-3 py-1 text-xs font-medium rounded text-gray-500 hover:text-gray-800 transition-all">Human
+                            Only</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-8" data-aos="fade-up" data-aos-delay="100">
+                <div class="bg-gray-50 p-4 border-b border-gray-200">
+                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-regular fa-image text-blue-500"></i> Image Generation Models
+                    </h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left whitespace-nowrap">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-100 border-b border-gray-200">
+                            <tr>
+                                <th scope="col"
+                                    class="px-4 py-3 sticky left-0 bg-gray-100 z-10 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                                    Model</th>
+                                <th scope="col" colspan="4"
+                                    class="px-4 py-3 text-center border-r border-gray-200 text-blue-800">Regular</th>
+                                <th scope="col" colspan="4"
+                                    class="px-4 py-3 text-center border-r border-gray-200 text-amber-800">Unconventional
+                                </th>
+                                <th scope="col" colspan="4" class="px-4 py-3 text-center text-red-800">Impossible</th>
+                            </tr>
+                            <tr class="bg-gray-50 border-b border-gray-200 text-[10px] tracking-wider text-gray-500">
+                                <th scope="col"
+                                    class="px-4 py-2 sticky left-0 bg-gray-50 z-10 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                                </th>
+                                <th scope="col" class="px-2 py-2 text-center" title="Instruction Adherence">IA</th>
+                                <th scope="col" class="px-2 py-2 text-center" title="Interaction Accuracy">IntAcc</th>
+                                <th scope="col" class="px-2 py-2 text-center" title="Physical Realism">Phys</th>
+                                <th scope="col" class="px-2 py-2 text-center border-r border-gray-200"
+                                    title="Perceptual Quality">Perc</th>
+                                <th scope="col" class="px-2 py-2 text-center">IA</th>
+                                <th scope="col" class="px-2 py-2 text-center">IntAcc</th>
+                                <th scope="col" class="px-2 py-2 text-center">Phys</th>
+                                <th scope="col" class="px-2 py-2 text-center border-r border-gray-200">Perc</th>
+                                <th scope="col" class="px-2 py-2 text-center">IA</th>
+                                <th scope="col" class="px-2 py-2 text-center">IntAcc</th>
+                                <th scope="col" class="px-2 py-2 text-center">Phys</th>
+                                <th scope="col" class="px-2 py-2 text-center">Perc</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body-image" class="divide-y divide-gray-200 bg-white">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl border border-gray-200 shadow-sm overflow-hidden" data-aos="fade-up" data-aos-delay="180">
+                <div class="bg-gray-50 p-4 border-b border-gray-200">
+                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-film text-purple-500"></i> Video Generation Models
+                    </h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left whitespace-nowrap">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-100 border-b border-gray-200">
+                            <tr>
+                                <th scope="col"
+                                    class="px-4 py-3 sticky left-0 bg-gray-100 z-10 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                                    Model</th>
+                                <th scope="col" colspan="4"
+                                    class="px-4 py-3 text-center border-r border-gray-200 text-blue-800">Regular</th>
+                                <th scope="col" colspan="4"
+                                    class="px-4 py-3 text-center border-r border-gray-200 text-amber-800">Unconventional
+                                </th>
+                                <th scope="col" colspan="4" class="px-4 py-3 text-center text-red-800">Impossible</th>
+                            </tr>
+                            <tr class="bg-gray-50 border-b border-gray-200 text-[10px] tracking-wider text-gray-500">
+                                <th scope="col"
+                                    class="px-4 py-2 sticky left-0 bg-gray-50 z-10 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                                </th>
+                                <th scope="col" class="px-2 py-2 text-center" title="Instruction Adherence">IA</th>
+                                <th scope="col" class="px-2 py-2 text-center" title="Interaction Accuracy">IntAcc</th>
+                                <th scope="col" class="px-2 py-2 text-center" title="Physical Realism">Phys</th>
+                                <th scope="col" class="px-2 py-2 text-center border-r border-gray-200"
+                                    title="Perceptual Quality">Perc</th>
+                                <th scope="col" class="px-2 py-2 text-center">IA</th>
+                                <th scope="col" class="px-2 py-2 text-center">IntAcc</th>
+                                <th scope="col" class="px-2 py-2 text-center">Phys</th>
+                                <th scope="col" class="px-2 py-2 text-center border-r border-gray-200">Perc</th>
+                                <th scope="col" class="px-2 py-2 text-center">IA</th>
+                                <th scope="col" class="px-2 py-2 text-center">IntAcc</th>
+                                <th scope="col" class="px-2 py-2 text-center">Phys</th>
+                                <th scope="col" class="px-2 py-2 text-center">Perc</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body-video" class="divide-y divide-gray-200 bg-white">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="failure-modes" class="section-shell mb-16" data-aos="fade-up" data-aos-duration="900">
+            <h2 class="text-2xl font-bold mb-4 border-b pb-2 border-gray-200">Failure Mode Gallery</h2>
+            <p class="text-gray-700 leading-relaxed mb-8 max-w-4xl">
+                We organize failure cases by scenario type and modality to expose where current world models break
+                down. Each view summarizes the dominant failure modes observed in the benchmark and pairs them
+                with descriptive and predictive examples.
+            </p>
+
+            <div class="glass-panel rounded-2xl border border-gray-200 shadow-sm overflow-hidden" data-aos="fade-up" data-aos-delay="120">
+                <div class="bg-gray-50 border-b border-gray-200 p-6 sm:p-8">
+                    <div class="flex flex-col xl:flex-row gap-8 justify-between xl:items-center">
+                        <div class="max-w-xl">
+                            <h3 id="gallery-title"
+                                class="text-2xl font-bold text-gray-900 mb-3 flex items-center gap-3">
+                                <span id="gallery-media-icon"
+                                    class="w-10 h-10 rounded-xl flex items-center justify-center text-lg text-white"></span>
+                                <span id="gallery-title-text"></span>
+                            </h3>
+                            <p id="gallery-description" class="text-sm text-gray-600 leading-relaxed"></p>
+                        </div>
+
+                        <div class="flex flex-wrap gap-x-8 gap-y-5">
+                            <div>
+                                <p class="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2.5">Scenario
+                                </p>
+                                <div id="scenario-tabs" class="flex flex-wrap gap-2">
+                                    <button type="button" data-scenario="regular"
+                                        class="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 transition-colors hover:bg-gray-100">Regular</button>
+                                    <button type="button" data-scenario="unconventional"
+                                        class="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 transition-colors hover:bg-gray-100">Unconventional</button>
+                                    <button type="button" data-scenario="impossible"
+                                        class="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 transition-colors hover:bg-gray-100">Impossible</button>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2.5">Modality
+                                </p>
+                                <div id="modality-tabs" class="flex flex-wrap gap-2">
+                                    <button type="button" data-modality="image"
+                                        class="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 transition-colors hover:bg-gray-100">Image</button>
+                                    <button type="button" data-modality="video"
+                                        class="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 transition-colors hover:bg-gray-100">Video</button>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2.5">Prompt
+                                </p>
+                                <div id="prompt-tabs" class="flex flex-wrap gap-2">
+                                    <button type="button" data-prompt-mode="descriptive"
+                                        class="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 transition-colors hover:bg-gray-100">Descriptive</button>
+                                    <button type="button" data-prompt-mode="predictive"
+                                        class="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 transition-colors hover:bg-gray-100">Predictive</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 sm:p-8 bg-white">
+                    <div id="gallery-media-groups" class="grid grid-cols-1 lg:grid-cols-3 gap-6"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="citation" class="section-shell mb-12" data-aos="fade-up" data-aos-duration="900">
+            <h2 class="text-2xl font-bold mb-4">Citation</h2>
+            <div class="bg-gray-800 rounded-2xl p-4 overflow-x-auto relative group shadow-[0_24px_60px_-35px_rgba(17,24,39,0.9)]">
+                <button onclick="navigator.clipboard.writeText(document.getElementById('bibtex').innerText)"
+                    class="absolute top-2 right-2 bg-gray-700 hover:bg-gray-600 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                    Copy
+                </button>
+                <pre id="bibtex" class="text-gray-300 text-sm font-mono whitespace-pre">
+                </pre>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="media-lightbox"
+        class="hidden fixed inset-0 z-50 bg-gray-950/90 backdrop-blur-sm p-4 sm:p-6 lg:p-10 items-center justify-center">
+        <div class="relative w-full max-w-5xl mx-auto">
+            <button id="media-lightbox-close" type="button"
+                class="absolute -top-12 right-0 sm:-right-12 sm:top-0 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-full w-10 h-10 transition-colors flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="rounded-xl overflow-hidden bg-black shadow-2xl">
+                <div id="media-lightbox-content" class="bg-black flex justify-center"></div>
+                <div class="bg-white p-5">
+                    <p id="media-lightbox-label"
+                        class="inline-block px-2 py-1 bg-gray-100 border border-gray-200 rounded text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-2">
+                    </p>
+                    <p id="media-lightbox-caption" class="text-sm text-gray-800 leading-relaxed"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script>
+        const failureModeGalleryData = {
+            regular: {
+                label: "Regular",
+                description: "Frequent, in-distribution tool-task pairs that test whether models can reliably execute familiar physical interactions.",
+                accent: "blue",
+                image: {
+                    modalityLabel: "Image",
+                    failureModes: [
+                        { code: "F1", title: "Physical Violation", definition: "The generated scene violates basic physical principles or produces interactions that are physically implausible." },
+                        { code: "F2", title: "Inaccurate Attributes", definition: "The generated object does not match the attributes specified in the prompt." },
+                        { code: "F3", title: "Incorrect Outcome", definition: "The generated interaction fails to produce the expected result even when objects are recognizable." }
+                    ],
+                    descriptiveExamples: [
+                        { text: "The ladle is positioned unrealistically across the pot and bowl, creating an implausible pouring configuration." },
+                        { text: "The generated scene replaces the required screwdriver with an incorrect object." },
+                        { text: "The box remains sealed even though scissors are used." }
+                    ],
+                    predictiveExamples: [
+                        { text: "The liquid is transferred using an unrealistic geometry where the ladle orientation doesn't follow gravity." },
+                        { text: "The object interacting with the screw does not correctly match the required tool structure." },
+                        { text: "The scissors are present but the box is still unopened." }
+                    ]
+                },
+                video: {
+                    modalityLabel: "Video",
+                    failureModes: [
+                        { code: "F1", title: "Temporal Inconsistency", definition: "The generated video exhibits inconsistencies across frames that break temporal coherence." },
+                        { code: "F2", title: "Implausible Dynamics", definition: "The generated interaction violates realistic physical motion or state transitions." },
+                        { code: "F3", title: "Interaction Misexecution", definition: "The generated video fails to correctly execute the intended interaction." }
+                    ],
+                    descriptiveExamples: [
+                        { text: "The nutcracker and the walnut exhibit unstable geometry during the crushing phase." },
+                        { text: "The scraping motion against the wooden surface fails to demonstrate plausible force propagation." },
+                        { text: "The way the nutcracker is used is incorrect, so the intended action is misexecuted." }
+                    ],
+                    predictiveExamples: [
+                        { text: "The screwdriver tip and the screw head do not maintain a stable relative position across frames." },
+                        { text: "The corkscrew is rotated into the bottle, but lacks realistic physical response." },
+                        { text: "The scissors move near the cardboard box but fail to engage with the packing tape." }
+                    ]
+                }
+            },
+            unconventional: {
+                label: "Unconventional",
+                description: "Attribute-compatible substitutes probe whether a model can generalize affordances beyond memorized associations.",
+                accent: "amber",
+                image: {
+                    modalityLabel: "Image",
+                    failureModes: [
+                        { code: "F1", title: "Affordance Misgeneralization", definition: "The model fails to apply the unconventional tool specified and falls back to a familiar association." },
+                        { code: "F2", title: "Incorrect Outcome", definition: "The generated interaction fails to produce the expected result even when the substitute tool appears." },
+                        { code: "F3", title: "Physical Violation", definition: "The generated scene violates basic physical principles with the depicted objects." }
+                    ],
+                    descriptiveExamples: [
+                        { text: "The zipper is shown being operated using a paperclip instead of the intended substitute tool." },
+                        { text: "A knife is used to open a wine bottle, yet the cork remains inserted." },
+                        { text: "A ladle is shown suspended above a bowl while pouring soup, appearing physically implausible." }
+                    ],
+                    predictiveExamples: [
+                        { text: "A book is used to strike a nail, but the interaction mimics canonical hammering." },
+                        { text: "A note is pinned using a thin stick, but fails to properly secure the paper." },
+                        { text: "A coin is inserted into a remote control battery compartment in an implausible way." }
+                    ]
+                },
+                video: {
+                    modalityLabel: "Video",
+                    failureModes: [
+                        { code: "F1", title: "Affordance Misgeneralization", definition: "The model incorrectly transfers the affordances of one object class to another." },
+                        { code: "F2", title: "Implausible Dynamics", definition: "The generated interaction violates realistic physical motion or state transitions." },
+                        { code: "F3", title: "Interaction Misexecution", definition: "The generated video fails to correctly execute the intended interaction." }
+                    ],
+                    descriptiveExamples: [
+                        { text: "The model fails to execute the affordance and never uses the coin to loosen the screw." },
+                        { text: "After the plunger is lifted, a stack of plates suddenly appears in the sink." },
+                        { text: "The video shows fingers squeezing the lemon while the requested spoons act as a passive platform." }
+                    ],
+                    predictiveExamples: [
+                        { text: "The book is slammed toward the walnut, but the hand touches the walnut directly." },
+                        { text: "The wine opener never penetrates the cork; instead, the cork unrealistically adheres to the tool." },
+                        { text: "A paperclip never physically attaches to the zipper slider and only hovers over the surface." }
+                    ]
+                }
+            },
+            impossible: {
+                label: "Impossible",
+                description: "Attribute-violating tools test whether models can recognize when an interaction should fail.",
+                accent: "red",
+                image: {
+                    modalityLabel: "Image",
+                    failureModes: [
+                        { code: "F1", title: "Physical Violation", definition: "The scene violates physical principles, depicting impossible force transfer or unsupported interactions." },
+                        { code: "F2", title: "Instruction Adherence Failure", definition: "The generated image fails to follow the prompt specification." },
+                        { code: "F3", title: "Incorrect Outcome", definition: "The interaction fails to produce the expected result realistically." }
+                    ],
+                    descriptiveExamples: [
+                        { text: "A slice of bread is shown wrapped around a wine bottle neck, but cannot physically generate enough leverage." },
+                        { text: "A cork is shown next to a sliced tomato instead of performing the instructed interaction." },
+                        { text: "A walnut is shown cracked open on a couch cushion even though a pillow shouldn't be able to open it." }
+                    ],
+                    predictiveExamples: [
+                        { text: "An ice cube is shown pinning a note to a board even though it lacks the rigidity." },
+                        { text: "A cork and a tomato are shown side by side without any action being performed." },
+                        { text: "A car window is shown shattered while a person holds only a lightweight plastic water bottle." }
+                    ]
+                },
+                video: {
+                    modalityLabel: "Video",
+                    failureModes: [
+                        { code: "F1", title: "Physical Violation", definition: "Interactions violate basic principles, such as unrealistic force transfer or impossible material response." },
+                        { code: "F2", title: "Temporal Inconsistency", definition: "Fails to maintain temporal consistency across frames, breaking cause-and-effect progression." },
+                        { code: "F3", title: "Interaction Misexecution", definition: "Fails to correctly execute the intended interaction, not leading to the expected state change." }
+                    ],
+                    descriptiveExamples: [
+                        { text: "The walnut is crushed instantly the moment the glass jar is placed over it." },
+                        { text: "As paper is slid under a door, it suddenly teleports into a crumpled ball on the other side." },
+                        { text: "A feather duster is pressed against a lemon, which starts leaking juice despite being uncut." }
+                    ],
+                    predictiveExamples: [
+                        { text: "A whole, uncut lemon is squeezed with a soft sponge, causing an impossible amount of juice to pour out." },
+                        { text: "Ice cubes pinned to a corkboard instantly morph into turquoise paper clips." },
+                        { text: "A heavy water bottle is meant to smash a window, but devolves into a liquid-like glass shattering glitch." }
+                    ]
+                }
+            }
+        };
+
+        const galleryState = {
+            scenario: "regular",
+            modality: "image",
+            promptMode: "descriptive"
+        };
+
+        const accentClasses = {
+            blue: { soft: "bg-blue-50 text-blue-700 border-blue-200", solid: "bg-blue-600" },
+            amber: { soft: "bg-amber-50 text-amber-700 border-amber-200", solid: "bg-amber-500" },
+            red: { soft: "bg-red-50 text-red-700 border-red-200", solid: "bg-red-500" }
+        };
+
+        function setActiveTabs(containerId, activeValue, attributeName) {
+            document.querySelectorAll(`#${containerId} button`).forEach((button) => {
+                const isActive = button.dataset[attributeName] === activeValue;
+                button.classList.toggle("gallery-tab-active", isActive);
+                button.classList.toggle("bg-white", !isActive);
+                button.classList.toggle("text-gray-600", !isActive);
+            });
+        }
+
+        function getMediaAssetPath(scenarioKey, modalityKey, variantKey, index) {
+            const extension = modalityKey === "image" ? "png" : "mp4";
+            return `data/failure_mode_gallery/${scenarioKey}/${modalityKey}/f${index + 1}_${variantKey}.${extension}`;
+        }
+
+        function openMediaLightbox(type, src, label, caption) {
+            const lightbox = document.getElementById("media-lightbox");
+            const content = document.getElementById("media-lightbox-content");
+
+            if (type === "image") {
+                content.innerHTML = `<img src="${src}" alt="${caption}" class="w-full max-h-[80vh] object-contain">`;
+            } else {
+                content.innerHTML = `<video src="${src}" class="w-full max-h-[80vh]" controls autoplay loop playsinline></video>`;
+            }
+
+            document.getElementById("media-lightbox-label").textContent = label;
+            document.getElementById("media-lightbox-caption").textContent = caption;
+            lightbox.classList.remove("hidden");
+            lightbox.classList.add("flex");
+            document.body.classList.add("lightbox-open");
+        }
+
+        function closeMediaLightbox() {
+            const lightbox = document.getElementById("media-lightbox");
+            const content = document.getElementById("media-lightbox-content");
+            lightbox.classList.add("hidden");
+            lightbox.classList.remove("flex");
+            content.innerHTML = "";
+            document.body.classList.remove("lightbox-open");
+        }
+
+        function renderFailureModeGallery() {
+            const scenarioData = failureModeGalleryData[galleryState.scenario];
+            const activeData = scenarioData[galleryState.modality];
+            const accent = scenarioData.accent;
+            const mediaIcon = galleryState.modality === "image" ? "fa-regular fa-image" : "fa-solid fa-film";
+
+            setActiveTabs("scenario-tabs", galleryState.scenario, "scenario");
+            setActiveTabs("modality-tabs", galleryState.modality, "modality");
+            setActiveTabs("prompt-tabs", galleryState.promptMode, "promptMode");
+
+            document.getElementById("gallery-title-text").textContent = `${scenarioData.label} Scenarios`;
+            document.getElementById("gallery-description").textContent = scenarioData.description;
+
+            const iconEl = document.getElementById("gallery-media-icon");
+            iconEl.className = `w-10 h-10 rounded-xl flex items-center justify-center text-lg text-white ${accentClasses[accent].solid}`;
+            iconEl.innerHTML = `<i class="${mediaIcon}"></i>`;
+
+            const cardsHtml = activeData.failureModes.map((mode, index) => {
+                const assetPath = getMediaAssetPath(galleryState.scenario, galleryState.modality, galleryState.promptMode, index);
+                const exampleText = activeData[`${galleryState.promptMode}Examples`][index].text;
+
+                const mediaMarkup = galleryState.modality === "image"
+                    ? `<img src="${assetPath}" alt="${exampleText}" class="w-full aspect-video object-cover">`
+                    : `<video src="${assetPath}" class="w-full aspect-video object-cover" muted loop playsinline></video>`;
+
+                return `
+                    <article class="interactive-card flex flex-col bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div class="p-5 border-b border-gray-100 flex-none">
+                            <div class="flex items-center gap-3 mb-2.5">
+                                <span class="inline-flex items-center justify-center rounded-lg ${accentClasses[accent].soft} w-8 h-8 text-xs font-bold border flex-shrink-0">${mode.code}</span>
+                                <h4 class="font-bold text-gray-900 text-sm leading-tight">${mode.title}</h4>
+                            </div>
+                            <p class="text-xs text-gray-600 line-clamp-2" title="${mode.definition}">${mode.definition}</p>
+                        </div>
+                        
+                        <button type="button" 
+                            class="relative group block w-full bg-gray-100 flex-none overflow-hidden"
+                            data-media-type="${galleryState.modality}"
+                            data-media-src="${assetPath}"
+                            data-media-label="${mode.code} ${galleryState.promptMode}"
+                            data-media-caption="${exampleText}">
+                            ${mediaMarkup}
+                            <div class="absolute inset-0 bg-gray-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[1px]">
+                                <span class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-gray-900 shadow-lg">
+                                    <i class="fa-solid fa-expand"></i> Expand
+                                </span>
+                            </div>
+                        </button>
+                        
+                        <div class="p-5 bg-gray-50 flex-grow">
+                            <span class="inline-block px-2 py-1 bg-white border border-gray-200 rounded text-[9px] font-bold uppercase tracking-wider text-gray-500 mb-2.5">
+                                ${galleryState.promptMode} Example
+                            </span>
+                            <p class="text-xs text-gray-700 leading-relaxed">${exampleText}</p>
+                        </div>
+                    </article>
+                `;
+            }).join("");
+
+            document.getElementById("gallery-media-groups").innerHTML = cardsHtml;
+        }
+
+        // Event Listeners
+        document.querySelectorAll("#scenario-tabs button").forEach(b => b.addEventListener("click", () => { galleryState.scenario = b.dataset.scenario; renderFailureModeGallery(); }));
+        document.querySelectorAll("#modality-tabs button").forEach(b => b.addEventListener("click", () => { galleryState.modality = b.dataset.modality; renderFailureModeGallery(); }));
+        document.querySelectorAll("#prompt-tabs button").forEach(b => b.addEventListener("click", () => { galleryState.promptMode = b.dataset.promptMode; renderFailureModeGallery(); }));
+
+        document.getElementById("gallery-media-groups").addEventListener("click", (event) => {
+            const trigger = event.target.closest("[data-media-src]");
+            if (trigger) openMediaLightbox(trigger.dataset.mediaType, trigger.dataset.mediaSrc, trigger.dataset.mediaLabel, trigger.dataset.mediaCaption);
+        });
+
+        document.getElementById("media-lightbox-close").addEventListener("click", closeMediaLightbox);
+        document.getElementById("media-lightbox").addEventListener("click", (e) => { if (e.target.id === "media-lightbox") closeMediaLightbox(); });
+        document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeMediaLightbox(); });
+
+        function updateHeaderState() {
+            const header = document.querySelector(".site-header");
+            if (!header) return;
+            header.classList.toggle("is-scrolled", window.scrollY > 18);
+        }
+
+        // Initialize
+        renderFailureModeGallery();
+        updateHeaderState();
+        window.addEventListener("scroll", updateHeaderState, { passive: true });
+        if (window.AOS) {
+            window.AOS.init({
+                duration: 850,
+                easing: "ease-out-cubic",
+                once: true,
+                offset: 90
+            });
+        }
+
+        // Configuration & Data
+        const state = { setting: 'predictive', view: 'both' };
+
+        const formatVal = (val, isPercent) => isPercent ? `${val}%` : val.toFixed(1);
+
+        const data = [
+            // === PREDICTIVE: IMAGE ===
+            {
+                setting: 'predictive', modality: 'image', model: 'Z-Image',
+                reg: { ia: { a: 52, h: 55 }, int: { a: 44, h: 50 }, phys: { a: 2.5, h: 2.7 }, perc: { a: 2.4, h: 2.9 } },
+                unc: { ia: { a: 33, h: 39 }, int: { a: 29, h: 27 }, phys: { a: 1.7, h: 2.8 }, perc: { a: 2.2, h: 2.5 } },
+                imp: { ia: { a: 26, h: 24 }, int: { a: 21, h: 28 }, phys: { a: 1.5, h: 1.4 }, perc: { a: 1.9, h: 2.1 } }
+            },
+            {
+                setting: 'predictive', modality: 'image', model: 'Qwen-Img',
+                reg: { ia: { a: 63, h: 74 }, int: { a: 60, h: 70 }, phys: { a: 3.3, h: 3.5 }, perc: { a: 3.8, h: 4.0 } },
+                unc: { ia: { a: 41, h: 52 }, int: { a: 37, h: 48 }, phys: { a: 2.2, h: 2.9 }, perc: { a: 2.4, h: 3.2 } },
+                imp: { ia: { a: 36, h: 47 }, int: { a: 33, h: 43 }, phys: { a: 1.9, h: 2.7 }, perc: { a: 2.4, h: 3.0 } }
+            },
+            {
+                setting: 'predictive', modality: 'image', model: 'GPT-Img-1',
+                reg: { ia: { a: 67, h: 79 }, int: { a: 63, h: 75 }, phys: { a: 3.4, h: 4.2 }, perc: { a: 3.7, h: 4.4 } },
+                unc: { ia: { a: 44, h: 58 }, int: { a: 41, h: 52 }, phys: { a: 2.7, h: 3.3 }, perc: { a: 2.8, h: 3.6 } },
+                imp: { ia: { a: 40, h: 52, hh: 1 }, int: { a: 36, h: 48 }, phys: { a: 2.5, h: 3.3 }, perc: { a: 2.7, h: 3.4 } }
+            },
+            {
+                setting: 'predictive', modality: 'image', model: 'Nano-Banana-2', highlight: true,
+                reg: { ia: { a: 69, ah: 1, h: 81, hh: 1 }, int: { a: 65, ah: 1, h: 78, hh: 1 }, phys: { a: 3.6, ah: 1, h: 4.4, hh: 1 }, perc: { a: 3.8, ah: 1, h: 4.4, hh: 1 } },
+                unc: { ia: { a: 46, ah: 1, h: 60, hh: 1 }, int: { a: 43, ah: 1, h: 55, hh: 1 }, phys: { a: 2.8, ah: 1, h: 3.6, hh: 1 }, perc: { a: 3.0, ah: 1, h: 3.7, hh: 1 } },
+                imp: { ia: { a: 42, ah: 1, h: 52, hh: 1 }, int: { a: 38, ah: 1, h: 51, hh: 1 }, phys: { a: 2.6, ah: 1, h: 3.4, hh: 1 }, perc: { a: 2.8, ah: 1, h: 3.6, hh: 1 } }
+            },
+
+            // === PREDICTIVE: VIDEO ===
+            {
+                setting: 'predictive', modality: 'video', model: 'HuanyuanVideo',
+                reg: { ia: { a: 48, h: 52 }, int: { a: 45, h: 47 }, phys: { a: 2.4, h: 2.3 }, perc: { a: 2.8, h: 3.2 } },
+                unc: { ia: { a: 31, h: 29 }, int: { a: 23, h: 34 }, phys: { a: 1.6, h: 1.8 }, perc: { a: 2.1, h: 2.6 } },
+                imp: { ia: { a: 18, h: 25 }, int: { a: 22, h: 20 }, phys: { a: 1.5, h: 1.6 }, perc: { a: 1.6, h: 2.4 } }
+            },
+            {
+                setting: 'predictive', modality: 'video', model: 'Wan-2.2',
+                reg: { ia: { a: 44, h: 57 }, int: { a: 49, h: 51 }, phys: { a: 2.0, h: 2.6 }, perc: { a: 3.0, h: 2.9 } },
+                unc: { ia: { a: 29, h: 37 }, int: { a: 25, h: 28 }, phys: { a: 1.8, h: 2.0 }, perc: { a: 2.5, h: 2.4 } },
+                imp: { ia: { a: 23, h: 21 }, int: { a: 17, h: 30 }, phys: { a: 1.3, h: 1.9 }, perc: { a: 2.2, h: 2.0 } }
+            },
+            {
+                setting: 'predictive', modality: 'video', model: 'Sora-2', highlight: true,
+                reg: { ia: { a: 66, ah: 1, h: 83, hh: 1 }, int: { a: 63, ah: 1, h: 72 }, phys: { a: 3.1, ah: 1, h: 3.5 }, perc: { a: 3.4, ah: 1, h: 3.9, hh: 1 } },
+                unc: { ia: { a: 44, ah: 1, h: 53 }, int: { a: 40, h: 49, hh: 1 }, phys: { a: 2.3, ah: 1, h: 2.8, hh: 1 }, perc: { a: 2.7, ah: 1, h: 3.2, hh: 1 } },
+                imp: { ia: { a: 39, ah: 1, h: 48, hh: 1 }, int: { a: 36, ah: 1, h: 45, hh: 1 }, phys: { a: 2.2, ah: 1, h: 2.6, hh: 1 }, perc: { a: 2.5, ah: 1, h: 3.1, hh: 1 } }
+            },
+            {
+                setting: 'predictive', modality: 'video', model: 'Veo-3', highlight: true,
+                reg: { ia: { a: 64, h: 75 }, int: { a: 61, h: 80, hh: 1 }, phys: { a: 2.9, h: 3.4 }, perc: { a: 3.3, h: 3.8 } },
+                unc: { ia: { a: 42, h: 61, hh: 1 }, int: { a: 48, ah: 1, h: 47 }, phys: { a: 2.2, h: 2.6 }, perc: { a: 2.2, h: 3.1 } },
+                imp: { ia: { a: 37, h: 45 }, int: { a: 34, h: 42 }, phys: { a: 2.1, h: 2.4 }, perc: { a: 2.2, h: 2.9 } }
+            },
+
+            // === DESCRIPTIVE: IMAGE ===
+            {
+                setting: 'descriptive', modality: 'image', model: 'Z-Image',
+                reg: { ia: { a: 54, h: 57 }, int: { a: 49, h: 51 }, phys: { a: 2.7, h: 2.6 }, perc: { a: 2.9, h: 3.1 } },
+                unc: { ia: { a: 30, h: 38 }, int: { a: 27, h: 30 }, phys: { a: 1.6, h: 2.0 }, perc: { a: 2.3, h: 2.2 } },
+                imp: { ia: { a: 21, h: 29 }, int: { a: 24, h: 25 }, phys: { a: 1.3, h: 1.7 }, perc: { a: 1.8, h: 2.0 } }
+            },
+            {
+                setting: 'descriptive', modality: 'image', model: 'Qwen-Img',
+                reg: { ia: { a: 67, h: 78 }, int: { a: 63, h: 74 }, phys: { a: 3.1, h: 3.9 }, perc: { a: 3.3, h: 4.2 } },
+                unc: { ia: { a: 44, h: 60 }, int: { a: 41, h: 52 }, phys: { a: 2.3, h: 3.1 }, perc: { a: 2.6, h: 3.4 } },
+                imp: { ia: { a: 40, h: 51 }, int: { a: 36, h: 47 }, phys: { a: 2.1, h: 2.9 }, perc: { a: 2.4, h: 3.3 } }
+            },
+            {
+                setting: 'descriptive', modality: 'image', model: 'GPT-Img-1', highlight: true,
+                reg: { ia: { a: 76, ah: 1, h: 85 }, int: { a: 69, h: 79, hh: 1 }, phys: { a: 3.8, h: 4.3 }, perc: { a: 3.9, h: 4.6, hh: 1 } },
+                unc: { ia: { a: 52, h: 62 }, int: { a: 39, h: 57 }, phys: { a: 3.0, h: 3.7 }, perc: { a: 3.1, h: 3.8 } },
+                imp: { ia: { a: 47, h: 58, hh: 1 }, int: { a: 42, h: 52 }, phys: { a: 2.8, h: 3.5 }, perc: { a: 2.9, h: 3.6 } }
+            },
+            {
+                setting: 'descriptive', modality: 'image', model: 'Nano-Banana-2', highlight: true,
+                reg: { ia: { a: 74, h: 88, hh: 1 }, int: { a: 70, ah: 1, h: 76 }, phys: { a: 3.9, ah: 1, h: 4.5, hh: 1 }, perc: { a: 4.0, ah: 1, h: 4.5 } },
+                unc: { ia: { a: 53, ah: 1, h: 65, hh: 1 }, int: { a: 46, ah: 1, h: 60, hh: 1 }, phys: { a: 3.2, ah: 1, h: 4.0, hh: 1 }, perc: { a: 3.3, ah: 1, h: 4.2, hh: 1 } },
+                imp: { ia: { a: 48, ah: 1, h: 56 }, int: { a: 43, ah: 1, h: 55, hh: 1 }, phys: { a: 3.0, ah: 1, h: 3.8, hh: 1 }, perc: { a: 3.2, ah: 1, h: 4.0, hh: 1 } }
+            },
+
+            // === DESCRIPTIVE: VIDEO ===
+            {
+                setting: 'descriptive', modality: 'video', model: 'HuanyuanVideo',
+                reg: { ia: { a: 47, h: 53 }, int: { a: 44, h: 56 }, phys: { a: 2.3, h: 2.1 }, perc: { a: 2.7, h: 3.3 } },
+                unc: { ia: { a: 28, h: 31 }, int: { a: 26, h: 29 }, phys: { a: 1.7, h: 2.4 }, perc: { a: 2.2, h: 2.3 } },
+                imp: { ia: { a: 22, h: 24 }, int: { a: 18, h: 27 }, phys: { a: 1.4, h: 1.5 }, perc: { a: 2.2, h: 2.1 } }
+            },
+            {
+                setting: 'descriptive', modality: 'video', model: 'Wan-2.2',
+                reg: { ia: { a: 53, h: 54 }, int: { a: 46, h: 58 }, phys: { a: 2.1, h: 2.8 }, perc: { a: 2.9, h: 3.0 } },
+                unc: { ia: { a: 32, h: 35 }, int: { a: 24, h: 36 }, phys: { a: 1.9, h: 2.2 }, perc: { a: 2.6, h: 2.9 } },
+                imp: { ia: { a: 20, h: 33 }, int: { a: 23, h: 26 }, phys: { a: 1.6, h: 2.0 }, perc: { a: 2.3, h: 2.6 } }
+            },
+            {
+                setting: 'descriptive', modality: 'video', model: 'Sora-2', highlight: true,
+                reg: { ia: { a: 69, ah: 1, h: 82, hh: 1 }, int: { a: 64, ah: 1, h: 70 }, phys: { a: 3.2, ah: 1, h: 3.6, hh: 1 }, perc: { a: 3.6, ah: 1, h: 4.0, hh: 1 } },
+                unc: { ia: { a: 42, ah: 1, h: 50 }, int: { a: 38, h: 46, hh: 1 }, phys: { a: 2.2, ah: 1, h: 2.6, hh: 1 }, perc: { a: 2.6, ah: 1, h: 3.1, hh: 1 } },
+                imp: { ia: { a: 40, ah: 1, h: 46, hh: 1 }, int: { a: 37, ah: 1, h: 47, hh: 1 }, phys: { a: 2.3, ah: 1, h: 2.5, hh: 1 }, perc: { a: 2.6, ah: 1, h: 3.1, hh: 1 } }
+            },
+            {
+                setting: 'descriptive', modality: 'video', model: 'Veo-3', highlight: true,
+                reg: { ia: { a: 66, h: 78 }, int: { a: 63, h: 79, hh: 1 }, phys: { a: 3.1, h: 3.5 }, perc: { a: 3.4, h: 3.9 } },
+                unc: { ia: { a: 40, h: 58, hh: 1 }, int: { a: 46, ah: 1, h: 45 }, phys: { a: 2.1, h: 2.6 }, perc: { a: 2.2, h: 2.9 } },
+                imp: { ia: { a: 38, h: 44 }, int: { a: 35, h: 44 }, phys: { a: 2.2, h: 2.4 }, perc: { a: 2.3, h: 2.9 } }
+            }
+        ];
+
+        function renderCell(scoreObj, isPercent) {
+            const { a, h, ah, hh } = scoreObj;
+            let html = `<div class="flex items-center justify-center gap-1 font-mono text-xs">`;
+
+            // Auto Score
+            if (state.view === 'both' || state.view === 'auto') {
+                const autoCls = ah ? "text-teal-700 bg-teal-50 border-teal-200 font-bold" : "text-gray-600 border-transparent";
+                html += `<span class="px-1 py-0.5 rounded border ${autoCls}">${formatVal(a, isPercent)}</span>`;
+            }
+
+            // Divider
+            if (state.view === 'both') {
+                html += `<span class="text-gray-300">/</span>`;
+            }
+
+            // Human Score
+            if (state.view === 'both' || state.view === 'human') {
+                const humCls = hh ? "text-amber-700 bg-amber-50 border-amber-200 font-bold" : "text-gray-600 border-transparent";
+                html += `<span class="px-1 py-0.5 rounded border ${humCls}">${formatVal(h, isPercent)}</span>`;
+            }
+
+            html += `</div>`;
+            return html;
+        }
+
+        function renderRows(modality) {
+            const activeData = data.filter(d => d.setting === state.setting && d.modality === modality);
+
+            return activeData.map((row) => `
+            <tr class="hover:bg-gray-50 transition-colors ${row.highlight ? 'bg-blue-50/20' : ''}">
+                <td class="px-4 py-3 font-mono text-sm font-semibold text-gray-900 sticky left-0 ${row.highlight ? 'bg-blue-50/30' : 'bg-white'} border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                    ${row.model}
+                </td>
+                
+                <td class="px-2 py-3 text-center">${renderCell(row.reg.ia, true)}</td>
+                <td class="px-2 py-3 text-center">${renderCell(row.reg.int, true)}</td>
+                <td class="px-2 py-3 text-center">${renderCell(row.reg.phys, false)}</td>
+                <td class="px-2 py-3 text-center border-r border-gray-200">${renderCell(row.reg.perc, false)}</td>
+                
+                <td class="px-2 py-3 text-center">${renderCell(row.unc.ia, true)}</td>
+                <td class="px-2 py-3 text-center">${renderCell(row.unc.int, true)}</td>
+                <td class="px-2 py-3 text-center">${renderCell(row.unc.phys, false)}</td>
+                <td class="px-2 py-3 text-center border-r border-gray-200">${renderCell(row.unc.perc, false)}</td>
+                
+                <td class="px-2 py-3 text-center">${renderCell(row.imp.ia, true)}</td>
+                <td class="px-2 py-3 text-center">${renderCell(row.imp.int, true)}</td>
+                <td class="px-2 py-3 text-center">${renderCell(row.imp.phys, false)}</td>
+                <td class="px-2 py-3 text-center">${renderCell(row.imp.perc, false)}</td>
+            </tr>
+        `).join('');
+        }
+
+        function renderTables() {
+            document.getElementById('table-body-image').innerHTML = renderRows('image');
+            document.getElementById('table-body-video').innerHTML = renderRows('video');
+        }
+
+        function updateSetting(val) {
+            state.setting = val;
+
+            // Update styling for Setting Tabs
+            ['predictive', 'descriptive'].forEach(id => {
+                const btn = document.getElementById(`btn-${id}`);
+                if (btn) {
+                    if (state.setting === id) {
+                        btn.className = "tab-btn px-4 py-1.5 text-sm font-semibold rounded-md shadow bg-white text-gray-900 transition-all";
+                    } else {
+                        btn.className = "tab-btn px-4 py-1.5 text-sm font-semibold rounded-md text-gray-500 hover:text-gray-900 transition-all";
+                    }
+                }
+            });
+
+            renderTables();
+        }
+
+        function updateView(view) {
+            state.view = view;
+
+            // Update styling for View Tabs
+            ['both', 'auto', 'human'].forEach(id => {
+                const btn = document.getElementById(`view-${id}`);
+                if (state.view === id) {
+                    btn.className = "view-btn px-3 py-1 text-xs font-medium rounded shadow-sm bg-white text-gray-800 transition-all";
+                } else {
+                    btn.className = "view-btn px-3 py-1 text-xs font-medium rounded text-gray-500 hover:text-gray-800 transition-all";
+                }
+            });
+
+            renderTables();
+        }
+
+        // Initial render
+        renderTables();
+    </script>
+</body>
+
+</html>
