@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TAILOR: Trimming the Long-Tail of World Modeling</title>
+    <title>TAILOR: Trimming the Long-Tail of Visual World Modeling Evaluation</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link
@@ -466,8 +466,8 @@
                             class="longtail-bar"></span><span class="longtail-bar"></span><span
                             class="longtail-bar"></span><span class="longtail-bar"></span><span
                             class="longtail-bar"></span><span class="longtail-bar"></span></span><span
-                        class="tail-core">Long-Tail</span></span> of <br class="hidden sm:block" />World Modeling in
-                Visual Generation
+                        class="tail-core">Long-Tail</span></span> of <br class="hidden sm:block" />Visual World Modeling
+                Evaluation
             </h1>
 
             <div class="text-lg mb-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-gray-700">
@@ -481,6 +481,8 @@
                         Ha</a><sup>1</sup></span>
                 <span class="font-medium hover:text-blue-600 transition-colors cursor-pointer"><a href="#">Jiateng
                         Liu</a><sup>1</sup></span>
+                <span class="font-medium hover:text-blue-600 transition-colors cursor-pointer"><a href="#">Zhenhailong
+                        Wang</a><sup>1</sup></span>
                 <span class="font-medium hover:text-blue-600 transition-colors cursor-pointer"><a href="#">Yue
                         Guo</a><sup>1</sup></span>
                 <span class="font-medium hover:text-blue-600 transition-colors cursor-pointer"><a href="#">Yunzhu
@@ -542,11 +544,8 @@
                     </p>
 
                     <div class="intro-question">
-                        <strong>This raises a central question:</strong> Do current world models truly internalize the
-                        underlying
-                        physical principles of object interactions, or do they primarily rely on statistical
-                        regularities
-                        observed in training data?
+                        <strong>This raises a central question:</strong> Do visual world models internalize and
+                        generalize the physical principles?
                     </div>
 
                     <p>
@@ -936,7 +935,7 @@
                     ],
                     descriptiveExamples: [
                         { text: "The nutcracker and the walnut exhibit unstable geometry during the crushing phase." },
-                        { text: "The scraping motion against the wooden surface fails to demonstrate plausible force propagation." },
+                        { text: "The scraping motion against the wooden surface fails to demonstrate plausible force propagation, as the white material lifts away without resistance, indicating a violation of realistic physical dynamics." },
                         { text: "The way the nutcracker is used is incorrect, so the intended action is misexecuted." }
                     ],
                     predictiveExamples: [
